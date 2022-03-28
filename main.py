@@ -11,6 +11,7 @@
 #
 # Dela upp inmatade formler
 # Titta på första gruppen i formeln
+# Här kanske man kan göra snyggt som den där hemsidan, men med return f"{self.pos} ...."
 class MyErrorClass(Exception):
     pass
 
@@ -24,8 +25,9 @@ atoms = ['H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg', 'Al',
          'Pu', 'Am', 'Cm', 'Bk', 'Cf', 'Es', 'Fm', 'Md', 'No', 'Lr', 'Rf', 'Db', 'Sg', 'Bh', 'Hs', 'Mt', 'Ds', 'Rg',
          'Cn', 'Fl', 'Lv']
 
-#Jag tror jag borde fixa ett kösystem
+# Jag tror jag borde fixa ett kösystem
 #
+
 
 # Formeln måste börja med "(" eller stor bokstav
 def readformula(formula):
