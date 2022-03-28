@@ -4,3 +4,17 @@ minlista = "H   He  Li  Be  B   C   N   O   F   Ne  Na  Mg  Al  Si  P   S   Cl  
            "Ta  W   Re  Os  Ir  Pt  Au  Hg  Tl  Pb  Bi  Po  At  Rn  Fr  Ra  Ac  Th  Pa  U   Np  Pu  Am  Cm " \
            "Bk  Cf  Es  Fm  Md  No  Lr  Rf  Db  Sg  Bh  Hs  Mt  Ds  Rg  Cn  Fl  Lv"
 print(minlista.split())
+
+x = 20
+y = 25
+
+if x == 22:
+    print("1")
+else:
+    if x == 20:
+        print("13")
+    if y < 30:
+        print("test")
+    else:
+        print("nope")
+

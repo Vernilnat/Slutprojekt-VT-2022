@@ -11,6 +11,8 @@
 #
 # Dela upp inmatade formler
 # Titta på första gruppen i formeln
+class MyErrorClass(Exception):
+    pass
 
 
 # Grundämnen
