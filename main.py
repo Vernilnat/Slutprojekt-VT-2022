@@ -12,8 +12,19 @@
 # Dela upp inmatade formler
 # Titta på första gruppen i formeln
 # Här kanske man kan göra snyggt som den där hemsidan, men med return f"{self.pos} ...."
-class MyErrorClass(Exception):
+class ErrorMSG(Exception):
     pass
+
+
+class Parser:
+    def __init__(self):
+        pass
+
+
+    def parse(self, formula):
+        self.formula = formula
+        self.len = len(formula)
+        return None
 
 
 # Grundämnen
