@@ -12,19 +12,37 @@
 # Dela upp inmatade formler
 # Titta på första gruppen i formeln
 # Här kanske man kan göra snyggt som den där hemsidan, men med return f"{self.pos} ...."
-class ErrorMSG(Exception):
+class ParseError(Exception):
     pass
 
 
-class Parser:
+class Node:
+    def __init__(self, value):
+        self.value = value
+        self.next = None
+
+
+class Queue:
     def __init__(self):
-        pass
+        self.first = None
+        self.last = None
 
+    def enqueue(self, formula):
+        q_formula = Node(formula)
+        if self.first is None:
+            self.first = q_formula
+            self.last = q_formula
+        else:
+            self.last.next = q_formula
+            self.last = q_formula
 
-    def parse(self, formula):
-        self.formula = formula
-        self.len = len(formula)
-        return None
+    def dequeue(self):
+        value = self.first.value
+        self.first = self.first.next
+        return value
+
+    def peek(self):
+        return self.first.value
 
 
 # Grundämnen
@@ -36,18 +54,32 @@ atoms = ['H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg', 'Al',
          'Pu', 'Am', 'Cm', 'Bk', 'Cf', 'Es', 'Fm', 'Md', 'No', 'Lr', 'Rf', 'Db', 'Sg', 'Bh', 'Hs', 'Mt', 'Ds', 'Rg',
          'Cn', 'Fl', 'Lv']
 
-# Jag tror jag borde fixa ett kösystem
-#
+
+def readformulas(formulas):
+    readmolecule()
+
+    '''while True:
+        molecule = formulas[0]
+        readmolecule(molecule)
+        if len(formulas) > 0:
+            formulas.pop(0)
+        else:
+            break'''
 
 
 # Formeln måste börja med "(" eller stor bokstav
-def readformula(formula):
+def readmolecule(molecule):
+    # Hämta ut
+    readgroup(molecule)
+    # Kolla om molekylen är färdig
+    # Om molekylen inte är färdig, fortsätt med nästa grupp
 
-    readgroup(firstgroup)
 
-
-def readgroup():
-    pass
+def readgroup(molecule):
+    if molecule[0].isupper():
+        pass
+    elif molecule[0] == "(":
+        pass
 
 
 def readatom():
@@ -62,22 +94,17 @@ def readnum():
     pass
 
 
-def parse_compunds(compunds):
-    formula = compunds[0]
-    readformula(formula)
-    return compunds
-
-
 def main():
-    compunds = []
     print("Mata in kemiska föreningar här:")
+
+    formula_queue = Queue()
+
     while True:
-        substance = input("")
-        if substance == "#":
+        molecule = input("")
+        if molecule == "#":
             break
-        compunds.append(substance)
-    results = parse_compunds(compunds)
-    print(results)
+        formula_queue.enqueue(molecule)
+    readformulas(formula_queue)
 
 
 # Startar programmet om programmet startar i denna fil. (Startar ej programmet ifall det kallas från en annan fil)
