@@ -16,6 +16,7 @@ class ParseError(Exception):
     pass
 
 
+# Enkel nod-objekt, värde och pekare på nästa
 class Node:
     def __init__(self, value):
         self.value = value
@@ -27,6 +28,9 @@ class Queue:
         self.first = None
         self.last = None
 
+    def __str__(self):
+        pass
+
     def enqueue(self, formula):
         q_formula = Node(formula)
         if self.first is None:
@@ -36,7 +40,7 @@ class Queue:
             self.last.next = q_formula
             self.last = q_formula
 
-    def dequeue(self):
+    def get(self):
         value = self.first.value
         self.first = self.first.next
         return value
@@ -55,31 +59,47 @@ atoms = ['H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg', 'Al',
          'Cn', 'Fl', 'Lv']
 
 
-def readformulas(formulas):
-    readmolecule()
-
-    '''while True:
-        molecule = formulas[0]
-        readmolecule(molecule)
-        if len(formulas) > 0:
-            formulas.pop(0)
-        else:
-            break'''
+def parseformula(formula):
+    ch_queue = Queue()
+    for character in formula:
+        ch_queue.enqueue(character)
+    if ch_queue.peek() is not None:
+        readmolecule(ch_queue)
 
 
-# Formeln måste börja med "(" eller stor bokstav
-def readmolecule(molecule):
-    # Hämta ut
-    readgroup(molecule)
+def readmolecule(ch_queue):
+    # Första saken i molekylen måste vara en grupp
+    readgroup(ch_queue)
     # Kolla om molekylen är färdig
     # Om molekylen inte är färdig, fortsätt med nästa grupp
+    # readmolecule(whatsleft)
 
 
-def readgroup(molecule):
-    if molecule[0].isupper():
-        pass
-    elif molecule[0] == "(":
-        pass
+# Gruppen måste börja med "(" eller stor bokstav
+def readgroup(ch_queue):
+    if ch_queue.peek().isalpha():
+        if ch_queue.peek().islower():
+            raise ParseError("Saknad stor bokstav vid radslutet")
+    elif ch_queue.peek() == "(":
+
+            '''
+            index = molecule.index(")")
+            # Mol i parentes
+            parmol = molecule[1:index]
+            num = molecule[index + 1]
+            # Kollar att det är en siffra och att det är ett positivt heltal
+            readnum(num)
+            try:
+                num = int(num)
+                if num < 2:
+                    raise ValueError
+            except ValueError:
+                raise ParseError("Saknad siffra vid radslutet", )'''
+
+    '''elif molecule[0].islower():
+        raise ParseError("Saknad stor bokstav vid radslutet")'''
+    else:
+        raise ParseError("Felaktig gruppstart vid radslutet")
 
 
 def readatom():
@@ -95,16 +115,18 @@ def readnum():
 
 
 def main():
-    print("Mata in kemiska föreningar här:")
+    formula = input("Mata in en kemisk förening för syntaxanalys, eller # för att avsluta programmet: \n")
+    if formula != "#":
+        parseformula(formula)
 
-    formula_queue = Queue()
 
-    while True:
+    '''while True:
         molecule = input("")
         if molecule == "#":
             break
         formula_queue.enqueue(molecule)
-    readformulas(formula_queue)
+    print(formula_queue)
+    readformulas(formula_queue)'''
 
 
 # Startar programmet om programmet startar i denna fil. (Startar ej programmet ifall det kallas från en annan fil)
