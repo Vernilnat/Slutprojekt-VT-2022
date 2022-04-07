@@ -29,7 +29,15 @@ class Queue:
         self.last = None
 
     def __str__(self):
-        pass
+        formula = ""
+        current = self.first
+        try:
+            while current.next is not None:
+                formula += current.value
+                current = current.next
+        except AttributeError:              # Fångar felet att current.next inte existerar än pga. att det
+            pass                            # inte är definierat som en Node ännu
+        return formula
 
     def enqueue(self, formula):
         q_formula = Node(formula)
@@ -50,7 +58,7 @@ class Queue:
 
 
 # Grundämnen
-atoms = ['H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Cl', 'Ar', 'K', 'Ca',
+ATOMS = ['H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Cl', 'Ar', 'K', 'Ca',
          'Sc', 'Ti', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr', 'Rb', 'Sr', 'Y',
          'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te', 'I', 'Xe', 'Cs', 'Ba', 'La',
          'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 'Hf', 'Ta', 'W', 'Re',
@@ -61,10 +69,15 @@ atoms = ['H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg', 'Al',
 
 def parseformula(formula):
     ch_queue = Queue()
-    for character in formula:
-        ch_queue.enqueue(character)
-    if ch_queue.peek() is not None:
-        readmolecule(ch_queue)
+    try:
+        for character in formula:
+            ch_queue.enqueue(character)
+        if ch_queue.peek() is not None:
+            readmolecule(ch_queue)
+        else:
+            raise ParseError("Empty whaaat?")
+    except ParseError as e:
+        return str(e) + str(ch_queue)
 
 
 def readmolecule(ch_queue):
@@ -75,39 +88,28 @@ def readmolecule(ch_queue):
     # readmolecule(whatsleft)
 
 
-# Gruppen måste börja med "(" eller stor bokstav
+# <group> ::= <atom> |<atom><num> | (<mol>) <num>
 def readgroup(ch_queue):
     if ch_queue.peek().isalpha():
-        if ch_queue.peek().islower():
-            raise ParseError("Saknad stor bokstav vid radslutet")
+        readatom(ch_queue)
     elif ch_queue.peek() == "(":
-
-            '''
-            index = molecule.index(")")
-            # Mol i parentes
-            parmol = molecule[1:index]
-            num = molecule[index + 1]
-            # Kollar att det är en siffra och att det är ett positivt heltal
-            readnum(num)
-            try:
-                num = int(num)
-                if num < 2:
-                    raise ValueError
-            except ValueError:
-                raise ParseError("Saknad siffra vid radslutet", )'''
-
-    '''elif molecule[0].islower():
-        raise ParseError("Saknad stor bokstav vid radslutet")'''
+        pass
     else:
         raise ParseError("Felaktig gruppstart vid radslutet")
 
 
-def readatom():
-    pass
-
-
-def readletter():
-    pass
+def readatom(ch_queue):
+    if ch_queue.peek().isupper():
+        atom = ch_queue.get()
+        if ch_queue.peek().islower():
+            atom = atom + ch_queue.get()
+        if atom in ATOMS:
+            print(f"Atom is {atom}")
+            return
+        else:
+            raise ParseError("Okänd atom vid radslutet ")
+    else:
+        raise ParseError("Saknad stor bokstav vid radslutet ")
 
 
 def readnum():
@@ -115,18 +117,14 @@ def readnum():
 
 
 def main():
-    formula = input("Mata in en kemisk förening för syntaxanalys, eller # för att avsluta programmet: \n")
-    if formula != "#":
-        parseformula(formula)
-
-
-    '''while True:
-        molecule = input("")
-        if molecule == "#":
-            break
-        formula_queue.enqueue(molecule)
-    print(formula_queue)
-    readformulas(formula_queue)'''
+    print("Mata in en kemisk förening för syntaxanalys, eller # för att avsluta programmet:")
+    while True:
+        formula = input()
+        if formula == "#":
+            quit()
+        else:
+            result = parseformula(formula)
+            print(result)
 
 
 # Startar programmet om programmet startar i denna fil. (Startar ej programmet ifall det kallas från en annan fil)
