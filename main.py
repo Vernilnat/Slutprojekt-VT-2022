@@ -5,18 +5,18 @@ class ParseError(Exception):
 # Enkel nod-objekt, värde och pekare på nästa
 class Node:
     def __init__(self, value):
-        self.value = value
-        self.next = None
+        self.value = value                  # Karaktär på pekarobjekt
+        self.next = None                    # Nästa karaktär i kön
 
 
 class Queue:
     def __init__(self):
-        self.first = None
-        self.last = None
-        self.par_count = 0
+        self.first = None                   # Första karaktären i listan
+        self.last = None                    # Sista karaktären i listan
+        self.par_count = 0                  # Håller koll på hur många högerparenteser som förväntas
 
-    def __str__(self):
-        formula = ""
+    def __str__(self):                      # Kallas vid print(), vid felmeddelanden
+        formula = ""                        # Skriver ut det kvarstående i kön
         current = self.first
         try:
             while current is not None:
@@ -26,7 +26,7 @@ class Queue:
             pass                            # inte är definierat som en Node ännu
         return formula
 
-    def enqueue(self, formula):
+    def enqueue(self, formula):             # Lägger till en formel i kön
         q_formula = Node(formula)
         if self.first is None:
             self.first = q_formula
@@ -35,21 +35,18 @@ class Queue:
             self.last.next = q_formula
             self.last = q_formula
 
-    def get(self):
+    def get(self):                          # Hämta och ta bort första karaktären i kön
         value = self.first.value
         self.first = self.first.next
         return value
 
-    def isempty(self):
+    def isempty(self):                      # Kolla om kön är tom eller inte
         if self.first is None:
             return True
         return False
 
-    def peek(self):
+    def peek(self):                         # Kollar första karaktären i kön
         return self.first.value
-
-    def par_tracker(self):
-        return self.par_count
 
 
 # Grundämnen
@@ -62,6 +59,7 @@ ATOMS = ['H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg', 'Al',
          'Cn', 'Fl', 'Lv']
 
 
+# Matar in formeln i syntaxanalyskön och skickar vidare till readmolecule()
 def parseformula(formula):
     ch_queue = Queue()
     try:
