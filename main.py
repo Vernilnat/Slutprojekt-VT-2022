@@ -27,6 +27,7 @@ class Queue:
     def __init__(self):
         self.first = None
         self.last = None
+        self.par_count = 0
 
     def __str__(self):
         formula = ""
@@ -61,6 +62,9 @@ class Queue:
     def peek(self):
         return self.first.value
 
+    def par_tracker(self):
+        return self.par_count
+
 
 # Grundämnen
 ATOMS = ['H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Cl', 'Ar', 'K', 'Ca',
@@ -91,16 +95,16 @@ def readmolecule(ch_queue):
     # Första saken i molekylen måste vara en grupp
     readgroup(ch_queue)
     # Kolla om molekylen är färdig
-    print(ch_queue)
     if ch_queue.isempty() is False:
         if ch_queue.peek() == ")":
+            if ch_queue.par_count < 1:
+                raise ParseError("Felaktig gruppstart vid radslutet ")
             return
         readmolecule(ch_queue)
 
 
 # <group> ::= <atom> |<atom><num> | (<mol>) <num>
 def readgroup(ch_queue):
-    par_count = 0
     if ch_queue.peek().isalpha():
         readatom(ch_queue)
         if ch_queue.isempty() is False:
@@ -108,10 +112,17 @@ def readgroup(ch_queue):
                 readnum(ch_queue)
     elif ch_queue.peek() == "(":
         ch_queue.get()
-        par_count += 1
+        ch_queue.par_count += 1
         readmolecule(ch_queue)
+        if ch_queue.isempty() is False:
+            if ch_queue.peek() == ")":
+                ch_queue.get()
+                ch_queue.par_count -= 1
+                readnum(ch_queue)
+        else:
+            raise ParseError("Saknad högerparentes vid radslutet ")
     else:
-        raise ParseError("Felaktig gruppstart vid radslutet")
+        raise ParseError("Felaktig gruppstart vid radslutet ")
 
 
 # Kallas från grupp
@@ -123,7 +134,6 @@ def readatom(ch_queue):
             if ch_queue.peek().islower():
                 atom = atom + ch_queue.get()
         if atom in ATOMS:
-            print(f"Atom is {atom}")
             return
         else:
             raise ParseError("Okänd atom vid radslutet ")
@@ -132,7 +142,12 @@ def readatom(ch_queue):
 
 
 def readnum(ch_queue):
+    if ch_queue.isempty() is True:
+        raise ParseError("Saknad siffra vid radslutet ")
+
     num = ch_queue.get()
+    if num.isdigit() is False:
+        raise ParseError("Saknad siffra vid radslutet ")
     if num == "0":
         raise ParseError("För litet tal vid radslutet ")
     while True:
@@ -143,10 +158,9 @@ def readnum(ch_queue):
         else:
             break
     if int(num) > 1:
-        print(f"Nuffran är {num}")
         return
     else:
-        ParseError("För litet tal vid radslutet ")
+        raise ParseError("För litet tal vid radslutet ")
 
 
 def main():
