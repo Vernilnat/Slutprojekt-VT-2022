@@ -1,17 +1,3 @@
-#
-# <formel>::= <mol> \n
-# <mol>   ::= <group> | <group><mol>
-# <group> ::= <atom> |<atom><num> | (<mol>) <num>
-# <atom>  ::= <LETTER> | <LETTER><letter>
-# <LETTER>::= A | B | C | ... | Z
-# <letter>::= a | b | c | ... | z
-# <num>   ::= 2 | 3 | 4 | ...
-#
-# Pseudokod:
-#
-# Dela upp inmatade formler
-# Titta på första gruppen i formeln
-# Här kanske man kan göra snyggt som den där hemsidan, men med return f"{self.pos} ...."
 class ParseError(Exception):
     pass
 
