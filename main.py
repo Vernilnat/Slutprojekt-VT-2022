@@ -32,7 +32,7 @@ class Queue:
         formula = ""
         current = self.first
         try:
-            while current.next is not None:
+            while current is not None:
                 formula += current.value
                 current = current.next
         except AttributeError:              # Fångar felet att current.next inte existerar än pga. att det
@@ -53,6 +53,11 @@ class Queue:
         self.first = self.first.next
         return value
 
+    def isempty(self):
+        if self.first is None:
+            return True
+        return False
+
     def peek(self):
         return self.first.value
 
@@ -72,37 +77,51 @@ def parseformula(formula):
     try:
         for character in formula:
             ch_queue.enqueue(character)
-        if ch_queue.peek() is not None:
+        if ch_queue.isempty() is False:
             readmolecule(ch_queue)
         else:
             raise ParseError("Empty whaaat?")
+        return "Formeln är syntaktiskt korrekt"
     except ParseError as e:
         return str(e) + str(ch_queue)
 
 
+# <mol>   ::= <group> | <group><mol>
 def readmolecule(ch_queue):
     # Första saken i molekylen måste vara en grupp
     readgroup(ch_queue)
     # Kolla om molekylen är färdig
-    # Om molekylen inte är färdig, fortsätt med nästa grupp
-    # readmolecule(whatsleft)
+    print(ch_queue)
+    if ch_queue.isempty() is False:
+        if ch_queue.peek() == ")":
+            return
+        readmolecule(ch_queue)
 
 
 # <group> ::= <atom> |<atom><num> | (<mol>) <num>
 def readgroup(ch_queue):
+    par_count = 0
     if ch_queue.peek().isalpha():
         readatom(ch_queue)
+        if ch_queue.isempty() is False:
+            if ch_queue.peek().isdigit():
+                readnum(ch_queue)
     elif ch_queue.peek() == "(":
-        pass
+        ch_queue.get()
+        par_count += 1
+        readmolecule(ch_queue)
     else:
         raise ParseError("Felaktig gruppstart vid radslutet")
 
 
+# Kallas från grupp
+# <atom>  ::= <LETTER> | <LETTER><letter>
 def readatom(ch_queue):
     if ch_queue.peek().isupper():
         atom = ch_queue.get()
-        if ch_queue.peek().islower():
-            atom = atom + ch_queue.get()
+        if ch_queue.isempty() is False:
+            if ch_queue.peek().islower():
+                atom = atom + ch_queue.get()
         if atom in ATOMS:
             print(f"Atom is {atom}")
             return
@@ -112,8 +131,22 @@ def readatom(ch_queue):
         raise ParseError("Saknad stor bokstav vid radslutet ")
 
 
-def readnum():
-    pass
+def readnum(ch_queue):
+    num = ch_queue.get()
+    if num == "0":
+        raise ParseError("För litet tal vid radslutet ")
+    while True:
+        if ch_queue.first is None:
+            break
+        if ch_queue.peek().isdigit():
+            num += ch_queue.get()
+        else:
+            break
+    if int(num) > 1:
+        print(f"Nuffran är {num}")
+        return
+    else:
+        ParseError("För litet tal vid radslutet ")
 
 
 def main():

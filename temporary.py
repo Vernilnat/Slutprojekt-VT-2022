@@ -5,5 +5,5 @@ minlista = "H   He  Li  Be  B   C   N   O   F   Ne  Na  Mg  Al  Si  P   S   Cl  
            "Bk  Cf  Es  Fm  Md  No  Lr  Rf  Db  Sg  Bh  Hs  Mt  Ds  Rg  Cn  Fl  Lv"
 # print(minlista.split())
 
-x = "Test"
-print(x.index("2"))
+if "1" > "2":
+    print("test")
