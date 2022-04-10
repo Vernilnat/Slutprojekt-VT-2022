@@ -70,18 +70,16 @@ def parseformula(formula):
         else:
             raise ParseError("Empty whaaat?")
         return "Formeln är syntaktiskt korrekt"
-    except ParseError as e:
+    except ParseError as e:                     # Skriver ut felmeddelanden
         return str(e) + str(ch_queue)
 
 
 # <mol>   ::= <group> | <group><mol>
 def readmolecule(ch_queue):
-    # Första saken i molekylen måste vara en grupp
-    readgroup(ch_queue)
-    # Kolla om molekylen är färdig
-    if ch_queue.isempty() is False:
-        if ch_queue.peek() == ")":
-            if ch_queue.par_count < 1:
+    readgroup(ch_queue)                         # Första saken i molekylen måste vara en grupp
+    if ch_queue.isempty() is False:             # Kolla om molekylen är färdig
+        if ch_queue.peek() == ")":              # Om molekyl slutar med högerparentes,
+            if ch_queue.par_count < 1:          # kolla att det fanns en vänsterparentes
                 raise ParseError("Felaktig gruppstart vid radslutet ")
             return
         readmolecule(ch_queue)
@@ -89,20 +87,20 @@ def readmolecule(ch_queue):
 
 # <group> ::= <atom> |<atom><num> | (<mol>) <num>
 def readgroup(ch_queue):
-    if ch_queue.peek().isalpha():
+    if ch_queue.peek().isalpha():               # Läser atom om det är en bokstav
         readatom(ch_queue)
-        if ch_queue.isempty() is False:
-            if ch_queue.peek().isdigit():
+        if ch_queue.isempty() is False:         # Kollar att gruppen inte är slut
+            if ch_queue.peek().isdigit():       # Läser nummer om det är en siffra
                 readnum(ch_queue)
-    elif ch_queue.peek() == "(":
+    elif ch_queue.peek() == "(":                # Läser parentes
         ch_queue.get()
-        ch_queue.par_count += 1
-        readmolecule(ch_queue)
+        ch_queue.par_count += 1                 # Räknar parenteser
+        readmolecule(ch_queue)                  # Läser molekyl inom parentesen
         if ch_queue.isempty() is False:
             if ch_queue.peek() == ")":
                 ch_queue.get()
                 ch_queue.par_count -= 1
-                readnum(ch_queue)
+                readnum(ch_queue)               # Läser nummer efter parentesen
         else:
             raise ParseError("Saknad högerparentes vid radslutet ")
     else:
@@ -112,7 +110,7 @@ def readgroup(ch_queue):
 # Kallas från grupp
 # <atom>  ::= <LETTER> | <LETTER><letter>
 def readatom(ch_queue):
-    if ch_queue.peek().isupper():
+    if ch_queue.peek().isupper():               # Ganska uppenbart...
         atom = ch_queue.get()
         if ch_queue.isempty() is False:
             if ch_queue.peek().islower():
@@ -126,9 +124,8 @@ def readatom(ch_queue):
 
 
 def readnum(ch_queue):
-    if ch_queue.isempty() is True:
-        raise ParseError("Saknad siffra vid radslutet ")
-
+    if ch_queue.isempty() is True:                          # Funktionen blir endast kallad om det måste vara en siffra
+        raise ParseError("Saknad siffra vid radslutet ")    # eller om peek() redan har visat att det är det
     num = ch_queue.get()
     if num.isdigit() is False:
         raise ParseError("Saknad siffra vid radslutet ")
