@@ -33,7 +33,6 @@ class Queue:
             self.last = q_formula
         else:
             self.last.next = q_formula
-            self.last = q_formula
 
     def get(self):                          # Hämta och ta bort första karaktären i kön
         value = self.first.value
@@ -123,6 +122,7 @@ def readatom(ch_queue):
         raise ParseError("Saknad stor bokstav vid radslutet ")
 
 
+# <num>   ::= 2 | 3 | 4 | ...
 def readnum(ch_queue):
     if ch_queue.isempty() is True:                          # Funktionen blir endast kallad om det måste vara en siffra
         raise ParseError("Saknad siffra vid radslutet ")    # eller om peek() redan har visat att det är det
